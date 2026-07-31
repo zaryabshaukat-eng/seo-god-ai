@@ -43,6 +43,9 @@ const portFromEnv = z.preprocess(
  */
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+    .default('info'),
   PORT: portFromEnv,
   SHOPIFY_SHOP_DOMAIN: optionalString,
   SHOPIFY_API_KEY: optionalString,
@@ -82,6 +85,7 @@ export const configSchema = envSchema.transform((env) => ({
   app: {
     nodeEnv: env.NODE_ENV,
     isProduction: env.NODE_ENV === 'production',
+    logLevel: env.LOG_LEVEL,
     port: env.PORT,
   },
   shopify: {

@@ -26,7 +26,7 @@ const fullEnv: Record<string, unknown> = {
 describe('envSchema', () => {
   it('parses a full valid environment into a nested config', () => {
     const config = configSchema.parse(fullEnv);
-    expect(config.app).toEqual({ nodeEnv: 'production', isProduction: true, port: 8080 });
+    expect(config.app).toEqual({ nodeEnv: 'production', isProduction: true, logLevel: 'info', port: 8080 });
     expect(config.shopify).toEqual({
       shopDomain: 'acme.myshopify.com',
       apiKey: 'key',
@@ -45,7 +45,7 @@ describe('envSchema', () => {
 
   it('applies defaults when the environment is empty', () => {
     const config = configSchema.parse({});
-    expect(config.app).toEqual({ nodeEnv: 'development', isProduction: false, port: 3000 });
+    expect(config.app).toEqual({ nodeEnv: 'development', isProduction: false, logLevel: 'info', port: 3000 });
     expect(config.shopify.apiVersion).toBe('2026-07');
     expect(config.shopify.tokenEncryptionKey).toBeUndefined();
     expect(config.database.url).toBe('postgresql://seogod:seogod@localhost:5432/seogod');
