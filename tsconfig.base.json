@@ -15,10 +15,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "baseUrl": ".",
-    "paths": {
-      "@seogod/*": ["packages/*/src/index.ts"]
-    }
+    "noImplicitOverride": true
   }
 }

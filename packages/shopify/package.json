@@ -20,7 +20,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@seogod/core": "*"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "vitest": "^3.0.0"

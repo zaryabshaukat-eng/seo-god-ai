@@ -1,10 +1,13 @@
 /**
  * Typed error hierarchy for all Shopify-related failures.
  *
- * Every error carries structured `context` so callers and loggers can
- * attach agent, module, user, store and timestamp data without parsing
- * free-form messages.
+ * Every error extends the platform-wide {@link AppError} so loggers,
+ * monitoring and the API layer can handle failures uniformly, while keeping
+ * Shopify-specific codes, context and metadata (status codes, request ids,
+ * retry hints).
  */
+
+import { AppError } from '@seogod/core';
 
 export type ShopifyErrorCode =
   | 'INVALID_STATE'
@@ -28,6 +31,7 @@ interface ShopifyErrorOptions {
   code: ShopifyErrorCode;
   cause?: unknown;
   context?: ShopifyErrorContext;
+  requestId?: string;
   /**
    * Whether a retry is likely to succeed. Transient failures (rate limits,
    * 5xx, network blips) are `true`; permanent failures are `false`.
@@ -35,19 +39,18 @@ interface ShopifyErrorOptions {
   retryable?: boolean;
 }
 
-export class ShopifyError extends Error {
-  readonly code: ShopifyErrorCode;
-  readonly context: ShopifyErrorContext;
-  readonly timestamp: string;
-  readonly retryable: boolean;
+export class ShopifyError extends AppError {
+  declare readonly code: ShopifyErrorCode;
+  declare readonly context: ShopifyErrorContext;
 
   constructor(message: string, options: ShopifyErrorOptions) {
-    super(message, { cause: options.cause });
-    this.name = new.target.name;
-    this.code = options.code;
-    this.context = options.context ?? {};
-    this.timestamp = new Date().toISOString();
-    this.retryable = options.retryable ?? false;
+    super(message, {
+      code: options.code,
+      cause: options.cause,
+      context: options.context,
+      requestId: options.requestId,
+      retryable: options.retryable,
+    });
   }
 }
 
@@ -96,7 +99,6 @@ export class ShopifyRateLimitError extends ShopifyError {
 
 export class ShopifyApiError extends ShopifyError {
   readonly status: number;
-  readonly requestId?: string;
   readonly body?: string;
 
   constructor(
@@ -114,10 +116,10 @@ export class ShopifyApiError extends ShopifyError {
       code: 'API_ERROR',
       context: options.context,
       cause: options.cause,
+      requestId: options.requestId,
       retryable: options.retryable,
     });
     this.status = options.status;
-    this.requestId = options.requestId;
     this.body = options.body;
   }
 }
