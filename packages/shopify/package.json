@@ -1,14 +1,28 @@
-﻿{
-    "version":  "0.0.0",
-    "name":  "@seogod/shopify",
-    "description":  "SEO GOD AI package: @seogod/shopify",
-    "scripts":  {
-                    "typecheck":  "tsc --noEmit",
-                    "build":  "tsc -p tsconfig.json"
-                },
-    "type":  "module",
-    "dependencies":  {
-
-                     },
-    "private":  true
+{
+  "name": "@seogod/shopify",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reusable Shopify Admin API SDK: OAuth, GraphQL client, typed service layer, secure token storage",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "vitest": "^3.0.0"
+  }
 }
