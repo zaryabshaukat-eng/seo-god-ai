@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: seogod-postgres
+    environment:
+      POSTGRES_USER: seogod
+      POSTGRES_PASSWORD: seogod
+      POSTGRES_DB: seogod
+    ports:
+      - "5432:5432"
+    volumes:
+      - seogod_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seogod"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: seogod-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - seogod_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  seogod_pgdata:
+  seogod_redisdata:

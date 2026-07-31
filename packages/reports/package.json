@@ -1,0 +1,14 @@
+﻿{
+    "version":  "0.0.0",
+    "name":  "@seogod/reports",
+    "description":  "SEO GOD AI package: @seogod/reports",
+    "scripts":  {
+                    "typecheck":  "tsc --noEmit",
+                    "build":  "tsc -p tsconfig.json"
+                },
+    "type":  "module",
+    "dependencies":  {
+
+                     },
+    "private":  true
+}

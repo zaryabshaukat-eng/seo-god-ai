@@ -1,0 +1,14 @@
+﻿{
+    "version":  "0.0.0",
+    "name":  "@seogod/shopify",
+    "description":  "SEO GOD AI package: @seogod/shopify",
+    "scripts":  {
+                    "typecheck":  "tsc --noEmit",
+                    "build":  "tsc -p tsconfig.json"
+                },
+    "type":  "module",
+    "dependencies":  {
+
+                     },
+    "private":  true
+}

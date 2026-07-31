@@ -1,0 +1,14 @@
+﻿{
+    "version":  "0.0.0",
+    "name":  "@seogod/dashboard",
+    "description":  "SEO GOD AI package: @seogod/dashboard",
+    "scripts":  {
+                    "typecheck":  "tsc --noEmit",
+                    "build":  "tsc -p tsconfig.json"
+                },
+    "type":  "module",
+    "dependencies":  {
+
+                     },
+    "private":  true
+}
