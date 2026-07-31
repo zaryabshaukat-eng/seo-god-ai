@@ -30,16 +30,19 @@ function client(options: Partial<GraphQLClientOptions> = {}): ShopifyGraphQLClie
 
 describe('ShopifyGraphQLClient', () => {
   it('requires a shop, token and API version', () => {
-    expect(() => new ShopifyGraphQLClient({ shopDomain: '', accessToken: 'x', apiVersion: '2026-07' })).toThrow(
-      ShopifyValidationError,
-    );
-    expect(() => new ShopifyGraphQLClient({ shopDomain: SHOP, accessToken: '', apiVersion: '2026-07' })).toThrow(
-      ShopifyValidationError,
-    );
+    expect(
+      () => new ShopifyGraphQLClient({ shopDomain: '', accessToken: 'x', apiVersion: '2026-07' }),
+    ).toThrow(ShopifyValidationError);
+    expect(
+      () => new ShopifyGraphQLClient({ shopDomain: SHOP, accessToken: '', apiVersion: '2026-07' }),
+    ).toThrow(ShopifyValidationError);
   });
 
   it('sends an authenticated POST with the query payload', async () => {
-    const captured: { input: string | null; init: RequestInit | null } = { input: null, init: null };
+    const captured: { input: string | null; init: RequestInit | null } = {
+      input: null,
+      init: null,
+    };
     const fetchImpl: typeof fetch = async (input, init) => {
       captured.input = String(input);
       captured.init = init ?? null;
@@ -54,7 +57,10 @@ describe('ShopifyGraphQLClient', () => {
     expect(captured.input).toBe(ENDPOINT);
     expect(captured.init?.method).toBe('POST');
     expect(captured.init?.headers).toMatchObject({ 'X-Shopify-Access-Token': 'shpat_test' });
-    expect(JSON.parse(String(captured.init?.body))).toMatchObject({ query: 'query Ping { ok }', variables: { a: 1 } });
+    expect(JSON.parse(String(captured.init?.body))).toMatchObject({
+      query: 'query Ping { ok }',
+      variables: { a: 1 },
+    });
     expect(result.data).toEqual({ ok: true });
   });
 
@@ -75,7 +81,9 @@ describe('ShopifyGraphQLClient', () => {
       return jsonResponse({ data: { ok: true } });
     };
 
-    const result = await client({ fetchImpl, retryBackoffMs: 1, maxRetries: 3 }).request<{ ok: boolean }>({
+    const result = await client({ fetchImpl, retryBackoffMs: 1, maxRetries: 3 }).request<{
+      ok: boolean;
+    }>({
       query: '{ ok }',
     });
     expect(calls).toBe(2);
@@ -83,7 +91,8 @@ describe('ShopifyGraphQLClient', () => {
   });
 
   it('throws ShopifyRateLimitError when 429 persists', async () => {
-    const fetchImpl = async () => new Response('{}', { status: 429, headers: { 'Retry-After': '0' } });
+    const fetchImpl = async () =>
+      new Response('{}', { status: 429, headers: { 'Retry-After': '0' } });
     await expect(
       client({ fetchImpl, retryBackoffMs: 1, maxRetries: 1 }).request({ query: '{ ok }' }),
     ).rejects.toBeInstanceOf(ShopifyRateLimitError);
@@ -101,7 +110,9 @@ describe('ShopifyGraphQLClient', () => {
       return jsonResponse({ data: { ok: true } });
     };
 
-    const result = await client({ fetchImpl, retryBackoffMs: 1, maxRetries: 3 }).request<{ ok: boolean }>({
+    const result = await client({ fetchImpl, retryBackoffMs: 1, maxRetries: 3 }).request<{
+      ok: boolean;
+    }>({
       query: '{ ok }',
     });
     expect(calls).toBe(2);
@@ -143,9 +154,9 @@ describe('ShopifyGraphQLClient', () => {
     const fetchImpl = async () => {
       throw new Error('socket hang up');
     };
-    await expect(client({ fetchImpl, retryBackoffMs: 1, maxRetries: 1 }).request({ query: '{ ok }' })).rejects.toBeInstanceOf(
-      ShopifyNetworkError,
-    );
+    await expect(
+      client({ fetchImpl, retryBackoffMs: 1, maxRetries: 1 }).request({ query: '{ ok }' }),
+    ).rejects.toBeInstanceOf(ShopifyNetworkError);
   });
 
   it('throttles when the store bucket is exhausted', async () => {

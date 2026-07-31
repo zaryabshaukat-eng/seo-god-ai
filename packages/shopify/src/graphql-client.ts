@@ -187,7 +187,7 @@ export class ShopifyGraphQLClient {
     let json: GraphQLResult<unknown>;
     try {
       json = JSON.parse(bodyText) as GraphQLResult<unknown>;
-    } catch (cause) {
+    } catch {
       return {
         ok: false,
         error: new ShopifyApiError('Shopify GraphQL response was not valid JSON', {

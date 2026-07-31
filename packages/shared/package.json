@@ -1,14 +1,12 @@
 ﻿{
-    "version":  "0.0.0",
-    "name":  "@seogod/shared",
-    "description":  "SEO GOD AI package: @seogod/shared",
-    "scripts":  {
-                    "typecheck":  "tsc --noEmit",
-                    "build":  "tsc -p tsconfig.json"
-                },
-    "type":  "module",
-    "dependencies":  {
-
-                     },
-    "private":  true
+  "version": "0.0.0",
+  "name": "@seogod/shared",
+  "description": "SEO GOD AI package: @seogod/shared",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "type": "module",
+  "dependencies": {},
+  "private": true
 }

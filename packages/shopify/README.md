@@ -88,25 +88,25 @@ All list methods accept `{ first?, after?, query? }` and return
 `{ items, pageInfo }`. Pagination is followed automatically up to
 `maxPages` (default 100).
 
-| Method | Returns |
-| --- | --- |
-| `getProducts(shop)` | `Connection<Product>` |
-| `getCollections(shop)` | `Connection<Collection>` |
-| `getPages(shop)` | `Connection<Page>` |
-| `getBlogs(shop)` | `Connection<Blog>` |
-| `getArticles(shop, { blogId? })` | `Connection<Article>` |
-| `getMetafields(shop, { namespace?, ownerId? })` | `Connection<Metafield>` |
-| `getThemes(shop)` | `Theme[]` (not paginated by Shopify) |
+| Method                                          | Returns                              |
+| ----------------------------------------------- | ------------------------------------ |
+| `getProducts(shop)`                             | `Connection<Product>`                |
+| `getCollections(shop)`                          | `Connection<Collection>`             |
+| `getPages(shop)`                                | `Connection<Page>`                   |
+| `getBlogs(shop)`                                | `Connection<Blog>`                   |
+| `getArticles(shop, { blogId? })`                | `Connection<Article>`                |
+| `getMetafields(shop, { namespace?, ownerId? })` | `Connection<Metafield>`              |
+| `getThemes(shop)`                               | `Theme[]` (not paginated by Shopify) |
 
 ### Writes
 
-| Method | Purpose |
-| --- | --- |
-| `updateProduct(shop, input)` | Update title, handle, description, SEO, tags, etc. |
-| `updatePage(shop, input)` | Update page content and SEO |
-| `updateBlog(shop, input)` | Update blog title/handle and SEO |
+| Method                              | Purpose                                            |
+| ----------------------------------- | -------------------------------------------------- |
+| `updateProduct(shop, input)`        | Update title, handle, description, SEO, tags, etc. |
+| `updatePage(shop, input)`           | Update page content and SEO                        |
+| `updateBlog(shop, input)`           | Update blog title/handle and SEO                   |
 | `updateTheme(shop, themeId, files)` | Upsert theme files (e.g. `templates/product.json`) |
-| `uploadImage(shop, { url, alt? })` | Upload an image from a public URL |
+| `uploadImage(shop, { url, alt? })`  | Upload an image from a public URL                  |
 
 Mutation errors surface through Shopify's `userErrors` and throw a typed
 `ShopifyError` with the field-level messages attached to `context`.
@@ -144,16 +144,16 @@ key invalidates previously stored tokens.
 
 Every failure is a subclass of `ShopifyError`:
 
-| Class | Meaning |
-| --- | --- |
-| `ShopifyAuthError` | OAuth code exchange failed |
-| `ShopifyHmacError` | OAuth callback signature invalid |
-| `ShopifyInvalidStateError` | OAuth `state` mismatch (CSRF) |
-| `ShopifyTokenError` | Missing or undecryptable stored token |
-| `ShopifyRateLimitError` | Rate limit exceeded (retryable) |
-| `ShopifyApiError` | Shopify returned an error (has `status`) |
-| `ShopifyNetworkError` | Network failure (retryable) |
-| `ShopifyValidationError` | Bad input to the SDK itself |
+| Class                      | Meaning                                  |
+| -------------------------- | ---------------------------------------- |
+| `ShopifyAuthError`         | OAuth code exchange failed               |
+| `ShopifyHmacError`         | OAuth callback signature invalid         |
+| `ShopifyInvalidStateError` | OAuth `state` mismatch (CSRF)            |
+| `ShopifyTokenError`        | Missing or undecryptable stored token    |
+| `ShopifyRateLimitError`    | Rate limit exceeded (retryable)          |
+| `ShopifyApiError`          | Shopify returned an error (has `status`) |
+| `ShopifyNetworkError`      | Network failure (retryable)              |
+| `ShopifyValidationError`   | Bad input to the SDK itself              |
 
 All errors expose `code`, `context` (shop domain, operation, request ID),
 and an ISO `timestamp` for structured logging.

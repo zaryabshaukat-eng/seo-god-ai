@@ -46,7 +46,10 @@ async function storeToken(accessToken = 'shpat_test'): Promise<MemoryTokenStorag
   return tokenStorage;
 }
 
-function buildCallbackQuery(secret: string, overrides: Record<string, string> = {}): URLSearchParams {
+function buildCallbackQuery(
+  secret: string,
+  overrides: Record<string, string> = {},
+): URLSearchParams {
   const params = new URLSearchParams({
     shop: SHOP,
     code: 'oauth-code-123',
@@ -114,14 +117,19 @@ describe('ShopifyService OAuth', () => {
   it('rejects a callback with a mismatched state', async () => {
     const service = makeService();
     await expect(
-      service.handleOAuthCallback({ query: buildCallbackQuery('client-secret'), expectedState: 'other' }),
+      service.handleOAuthCallback({
+        query: buildCallbackQuery('client-secret'),
+        expectedState: 'other',
+      }),
     ).rejects.toBeInstanceOf(ShopifyInvalidStateError);
   });
 
   it('rejects a callback for a spoofed shop domain', async () => {
     const service = makeService();
     await expect(
-      service.handleOAuthCallback({ query: buildCallbackQuery('client-secret', { shop: 'evil.com' }) }),
+      service.handleOAuthCallback({
+        query: buildCallbackQuery('client-secret', { shop: 'evil.com' }),
+      }),
     ).rejects.toBeInstanceOf(ShopifyValidationError);
   });
 
@@ -165,14 +173,21 @@ describe('ShopifyService reads', () => {
 
     await service.getPages(SHOP, { first: 25 });
     const parsed = JSON.parse(seenBody ?? '{}') as Record<string, unknown>;
-    expect((parsed.variables as Record<string, unknown>)).toMatchObject({ first: 25, after: null });
+    expect(parsed.variables as Record<string, unknown>).toMatchObject({ first: 25, after: null });
   });
 
   it('lists themes without pagination', async () => {
     const fetchImpl = async () =>
       jsonResponse({
         data: {
-          themes: [{ id: 'gid://shopify/Theme/1', name: 'Dawn', role: 'main', updatedAt: '2026-01-01T00:00:00Z' }],
+          themes: [
+            {
+              id: 'gid://shopify/Theme/1',
+              name: 'Dawn',
+              role: 'main',
+              updatedAt: '2026-01-01T00:00:00Z',
+            },
+          ],
         },
       });
     const service = makeService({ fetchImpl, tokenStorage: await storeToken() });
@@ -188,7 +203,8 @@ describe('ShopifyService reads', () => {
   });
 
   it('throws ShopifyApiError-style ShopifyError on GraphQL errors', async () => {
-    const fetchImpl = async () => jsonResponse({ errors: [{ message: 'You did something wrong' }] });
+    const fetchImpl = async () =>
+      jsonResponse({ errors: [{ message: 'You did something wrong' }] });
     const service = makeService({ fetchImpl, tokenStorage: await storeToken() });
     await expect(service.getProducts(SHOP)).rejects.toThrow(/You did something wrong/);
   });
@@ -200,7 +216,9 @@ describe('ShopifyService writes', () => {
     const fetchImpl: typeof fetch = async (_input, init) => {
       seenBody = String(init?.body);
       return jsonResponse({
-        data: { productUpdate: { product: { ...PRODUCT_NODE, title: 'New Title' }, userErrors: [] } },
+        data: {
+          productUpdate: { product: { ...PRODUCT_NODE, title: 'New Title' }, userErrors: [] },
+        },
       });
     };
     const service = makeService({ fetchImpl, tokenStorage: await storeToken() });
@@ -263,7 +281,11 @@ describe('ShopifyService writes', () => {
         data: {
           fileCreate: {
             files: [
-              { id: 'gid://shopify/File/1', alt: 'Alt text', image: { url: 'https://cdn.shopify.com/x.jpg' } },
+              {
+                id: 'gid://shopify/File/1',
+                alt: 'Alt text',
+                image: { url: 'https://cdn.shopify.com/x.jpg' },
+              },
             ],
             userErrors: [],
           },
@@ -281,7 +303,14 @@ describe('ShopifyService writes', () => {
     expect(seenBody).toContain('fileCreate');
     expect(JSON.parse(seenBody ?? '{}')).toMatchObject({
       variables: {
-        files: [{ originalSource: 'https://example.com/x.jpg', alt: 'Alt text', filename: 'x.jpg', contentType: 'IMAGE' }],
+        files: [
+          {
+            originalSource: 'https://example.com/x.jpg',
+            alt: 'Alt text',
+            filename: 'x.jpg',
+            contentType: 'IMAGE',
+          },
+        ],
       },
     });
     expect(image).toEqual({

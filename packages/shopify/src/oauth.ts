@@ -14,7 +14,11 @@ const SHOP_DOMAIN_PATTERN = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
  * phishing-style shop spoofing.
  */
 export function isValidShopDomain(shopDomain: string): boolean {
-  if (typeof shopDomain !== 'string' || shopDomain.length === 0 || shopDomain.length > MAX_SUBDOMAIN_LENGTH) {
+  if (
+    typeof shopDomain !== 'string' ||
+    shopDomain.length === 0 ||
+    shopDomain.length > MAX_SUBDOMAIN_LENGTH
+  ) {
     return false;
   }
   if (!SHOP_DOMAIN_PATTERN.test(shopDomain)) {
@@ -115,7 +119,9 @@ export async function exchangeAccessToken(
     });
   }
   if (!options.code) {
-    throw new ShopifyValidationError('OAuth code is required', { operation: 'exchangeAccessToken' });
+    throw new ShopifyValidationError('OAuth code is required', {
+      operation: 'exchangeAccessToken',
+    });
   }
 
   let response: Response;
@@ -133,10 +139,14 @@ export async function exchangeAccessToken(
       }),
     });
   } catch (cause) {
-    throw new ShopifyNetworkError('Failed to reach the Shopify OAuth token endpoint', {
-      shopDomain: options.shopDomain,
-      operation: 'exchangeAccessToken',
-    }, cause);
+    throw new ShopifyNetworkError(
+      'Failed to reach the Shopify OAuth token endpoint',
+      {
+        shopDomain: options.shopDomain,
+        operation: 'exchangeAccessToken',
+      },
+      cause,
+    );
   }
 
   if (!response.ok) {

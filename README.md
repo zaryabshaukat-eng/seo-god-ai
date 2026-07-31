@@ -50,12 +50,12 @@ docker compose up -d   # optional: local Postgres + Redis
 
 ## Development
 
-| Command | Purpose |
-| --- | --- |
+| Command             | Purpose                  |
+| ------------------- | ------------------------ |
 | `npm run typecheck` | Typecheck all workspaces |
-| `npm run lint` | Lint all workspaces |
-| `npm run test` | Test all workspaces |
-| `npm run build` | Build all workspaces |
+| `npm run lint`      | Lint all workspaces      |
+| `npm run test`      | Test all workspaces      |
+| `npm run build`     | Build all workspaces     |
 
 ## Safety
 

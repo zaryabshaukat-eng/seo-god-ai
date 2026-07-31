@@ -44,7 +44,6 @@ export interface EncryptedTokenStorageOptions {
 
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
-const TAG_LENGTH = 16;
 const ENVELOPE_VERSION = 1;
 
 interface CipherEnvelope {
@@ -114,7 +113,7 @@ export class EncryptedTokenStorage implements TokenStorage {
         decipher.final(),
       ]);
       return plaintext.toString('utf8');
-    } catch (cause) {
+    } catch {
       throw new ShopifyTokenError(
         'Failed to decrypt stored access token',
         'TOKEN_DECRYPTION_FAILED',
@@ -135,7 +134,7 @@ function parseEnvelope(payload: string): CipherEnvelope {
       throw new Error('malformed envelope');
     }
     return { v: parsed.v, iv: parsed.iv, tag: parsed.tag, ct: parsed.ct };
-  } catch (cause) {
+  } catch {
     throw new ShopifyTokenError(
       'Stored token is not a valid encrypted envelope',
       'TOKEN_DECRYPTION_FAILED',

@@ -10,14 +10,26 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "cycles": "depcruise apps packages --config .dependency-cruiser.cjs",
+    "db:generate": "npm run db:generate --workspace @seogod/database --if-present"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "typescript": "^5.5.0"
+    "@eslint/js": "^9.17.0",
+    "dependency-cruiser": "^16.6.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.18.0"
   }
 }

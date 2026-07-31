@@ -7,7 +7,12 @@ import {
   ShopifyValidationError,
 } from './errors.js';
 import { ShopifyGraphQLClient, type GraphQLResult } from './graphql-client.js';
-import { isValidShopDomain, validateHmac, buildAuthorizationUrl, exchangeAccessToken } from './oauth.js';
+import {
+  isValidShopDomain,
+  validateHmac,
+  buildAuthorizationUrl,
+  exchangeAccessToken,
+} from './oauth.js';
 import { paginate } from './paginate.js';
 import type { PageFetcher } from './paginate.js';
 import { MUTATIONS, QUERIES } from './queries.js';
@@ -335,12 +340,9 @@ export class ShopifyService {
     if (!input.id) {
       throw new ShopifyValidationError('Product id is required', { operation: 'updateProduct' });
     }
-    const result = await this.request<{ productUpdate: { product?: Product; userErrors: UserError[] } }>(
-      shopDomain,
-      'updateProduct',
-      MUTATIONS.productUpdate,
-      { input },
-    );
+    const result = await this.request<{
+      productUpdate: { product?: Product; userErrors: UserError[] };
+    }>(shopDomain, 'updateProduct', MUTATIONS.productUpdate, { input });
     assertNoUserErrors(result.data?.productUpdate.userErrors, 'updateProduct', shopDomain);
     const product = result.data?.productUpdate.product;
     if (!product) {
@@ -398,7 +400,11 @@ export class ShopifyService {
    * Upserts theme files (e.g. `templates/product.json`, `layout/theme.liquid`)
    * for the given theme. Returns the list of filenames that were upserted.
    */
-  async updateTheme(shopDomain: string, themeId: string, files: ThemeFileInput[]): Promise<string[]> {
+  async updateTheme(
+    shopDomain: string,
+    themeId: string,
+    files: ThemeFileInput[],
+  ): Promise<string[]> {
     if (!themeId) {
       throw new ShopifyValidationError('themeId is required', { operation: 'updateTheme' });
     }
@@ -408,7 +414,10 @@ export class ShopifyService {
       });
     }
     const result = await this.request<{
-      themeFilesUpsert: { upsertedThemeFiles?: Array<{ filename: string }>; userErrors: UserError[] };
+      themeFilesUpsert: {
+        upsertedThemeFiles?: Array<{ filename: string }>;
+        userErrors: UserError[];
+      };
     }>(shopDomain, 'updateTheme', MUTATIONS.themeFilesUpsert, { themeId, files });
     assertNoUserErrors(result.data?.themeFilesUpsert.userErrors, 'updateTheme', shopDomain);
     return result.data?.themeFilesUpsert.upsertedThemeFiles?.map((file) => file.filename) ?? [];
@@ -419,10 +428,11 @@ export class ShopifyService {
     if (!input.url) {
       throw new ShopifyValidationError('Image url is required', { operation: 'uploadImage' });
     }
-    const file: { originalSource: string; alt?: string; filename?: string; contentType: 'IMAGE' } = {
-      originalSource: input.url,
-      contentType: 'IMAGE',
-    };
+    const file: { originalSource: string; alt?: string; filename?: string; contentType: 'IMAGE' } =
+      {
+        originalSource: input.url,
+        contentType: 'IMAGE',
+      };
     if (input.alt) {
       file.alt = input.alt;
     }

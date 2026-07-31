@@ -35,7 +35,9 @@ describe('buildAuthorizationUrl', () => {
 
   it('builds a valid authorize URL', () => {
     const url = new URL(buildAuthorizationUrl(options));
-    expect(`${url.origin}${url.pathname}`).toBe('https://store.myshopify.com/admin/oauth/authorize');
+    expect(`${url.origin}${url.pathname}`).toBe(
+      'https://store.myshopify.com/admin/oauth/authorize',
+    );
     expect(url.searchParams.get('client_id')).toBe('client-id');
     expect(url.searchParams.get('scope')).toBe('read_products,write_content');
     expect(url.searchParams.get('redirect_uri')).toBe('https://app.example.com/callback');
@@ -134,10 +136,13 @@ describe('exchangeAccessToken', () => {
 
   it('surfaces expiry for online tokens', async () => {
     const fetchImpl = async (): Promise<Response> =>
-      new Response(JSON.stringify({ access_token: 'shpat_online', scope: 'read_products', expires_in: 86400 }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      new Response(
+        JSON.stringify({ access_token: 'shpat_online', scope: 'read_products', expires_in: 86400 }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
     const result = await exchangeAccessToken(options, fetchImpl);
     expect(result.expiresIn).toBe(86400);
   });

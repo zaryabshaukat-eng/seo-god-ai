@@ -1,14 +1,12 @@
 ﻿{
-    "version":  "0.0.0",
-    "name":  "@seogod/safety",
-    "description":  "SEO GOD AI package: @seogod/safety",
-    "scripts":  {
-                    "typecheck":  "tsc --noEmit",
-                    "build":  "tsc -p tsconfig.json"
-                },
-    "type":  "module",
-    "dependencies":  {
-
-                     },
-    "private":  true
+  "version": "0.0.0",
+  "name": "@seogod/safety",
+  "description": "SEO GOD AI package: @seogod/safety",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "type": "module",
+  "dependencies": {},
+  "private": true
 }
