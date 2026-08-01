@@ -48,10 +48,10 @@ model Store {
   installedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  crawlJobs  CrawlJob[]
-  pages      Page[]
-  approvals  ApprovalRequest[]
-  auditLogs  AuditLog[]
+  crawlJobs CrawlJob[]
+  pages     Page[]
+  approvals ApprovalRequest[]
+  auditLogs AuditLog[]
 }
 
 /// A single crawl run over a store.
@@ -61,6 +61,9 @@ model CrawlJob {
   store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
   status     CrawlStatus @default(PENDING)
   totalPages Int         @default(0)
+  seeds      Json? // seed URLs crawled first
+  statistics Json? // crawl summary: pages, skipped, failures, issues, duration
+  error      String? // terminal error message for FAILED jobs
   createdAt  DateTime    @default(now())
   startedAt  DateTime?
   finishedAt DateTime?
@@ -78,15 +81,35 @@ model Page {
   storeId         String
   store           Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
   url             String
+  finalUrl        String? // URL after redirects
   statusCode      Int?
+  contentType     String?
+  charset         String?
   title           String?
   metaDescription String?
+  metaRobots      String? // raw robots meta directive
+  canonicalUrl    String?
+  lang            String?
+  favicon         String?
+  themeColor      String?
+  ogTags          Json?
+  twitterTags     Json?
+  robotsBlocked   Boolean  @default(false) // blocked by robots.txt
+  redirectChain   Json? // list of URLs followed before finalUrl
   h1              String?
   contentHash     String?
   wordCount       Int?
+  ttfbMs          Int?
+  responseTimeMs  Int?
+  pageSizeBytes   Int?
+  htmlSizeBytes   Int?
+  scriptCount     Int?
+  stylesheetCount Int?
   createdAt       DateTime @default(now())
 
-  issues SeoIssue[]
+  issues         SeoIssue[]
+  links          PageLink[]
+  structuredData PageStructuredData[]
 
   @@unique([crawlJobId, url])
   @@index([storeId, url])
@@ -102,6 +125,37 @@ model SeoIssue {
   message   String?
   details   Json?
   createdAt DateTime @default(now())
+
+  @@index([pageId])
+}
+
+/// A link extracted from a crawled page (internal and external).
+model PageLink {
+  id         String   @id @default(cuid())
+  pageId     String
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  href       String // absolute, normalized target URL
+  anchorText String?
+  rel        String?
+  isInternal Boolean
+  isImage    Boolean  @default(false)
+  statusCode Int? // populated for internal targets that were crawled
+  createdAt  DateTime @default(now())
+
+  @@index([pageId])
+  @@index([href])
+}
+
+/// A structured-data block (JSON-LD / microdata / RDFa) on a page.
+model PageStructuredData {
+  id         String   @id @default(cuid())
+  pageId     String
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  format     String // jsonld | microdata | rdfa
+  schemaType String?
+  valid      Boolean  @default(true)
+  raw        Json // raw payload plus extracted schemas
+  createdAt  DateTime @default(now())
 
   @@index([pageId])
 }
@@ -126,15 +180,15 @@ model AuditLog {
 
 /// Transactional outbox for the event bus (@seogod/events).
 model OutboxEvent {
-  id            String        @id @default(cuid())
+  id            String       @id @default(cuid())
   type          String
   aggregateType String?
   aggregateId   String?
   payload       Json?
-  status        OutboxStatus  @default(PENDING)
-  attempts      Int           @default(0)
-  nextAttemptAt DateTime      @default(now())
-  createdAt     DateTime      @default(now())
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  nextAttemptAt DateTime     @default(now())
+  createdAt     DateTime     @default(now())
   processedAt   DateTime?
 
   @@index([status, nextAttemptAt])
