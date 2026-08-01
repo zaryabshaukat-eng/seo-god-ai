@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @seogod/core -w @seogod/config -w @seogod/shared -w @seogod/logging -w @seogod/shopify -w @seogod/agents -w @seogod/ai -w @seogod/crawler -w @seogod/reports -w @seogod/safety -w @seogod/seo-engine -w @seogod/ui -w @seogod/api -w @seogod/dashboard --if-present",
+    "build": "npm run build -w @seogod/core -w @seogod/config -w @seogod/shared -w @seogod/logging -w @seogod/shopify -w @seogod/database -w @seogod/agents -w @seogod/ai -w @seogod/crawler -w @seogod/reports -w @seogod/safety -w @seogod/seo-engine -w @seogod/ui -w @seogod/api -w @seogod/dashboard --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

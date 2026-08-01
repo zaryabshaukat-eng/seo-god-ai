@@ -1,0 +1,158 @@
+// SEO GOD AI — domain schema
+// Prisma schema for the platform's PostgreSQL database.
+// See docs/database.md for the model reference.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CrawlStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// A connected Shopify store and its encrypted access token.
+model Store {
+  id          String   @id @default(cuid())
+  shopDomain  String   @unique
+  accessToken String? // encrypted at rest via @seogod/shared AES-256-GCM
+  scopes      String[] @default([])
+  installedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  crawlJobs  CrawlJob[]
+  pages      Page[]
+  approvals  ApprovalRequest[]
+  auditLogs  AuditLog[]
+}
+
+/// A single crawl run over a store.
+model CrawlJob {
+  id         String      @id @default(cuid())
+  storeId    String
+  store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  status     CrawlStatus @default(PENDING)
+  totalPages Int         @default(0)
+  createdAt  DateTime    @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  pages Page[]
+
+  @@index([storeId, createdAt])
+}
+
+/// A crawled page snapshot for one crawl job.
+model Page {
+  id              String   @id @default(cuid())
+  crawlJobId      String
+  crawlJob        CrawlJob @relation(fields: [crawlJobId], references: [id], onDelete: Cascade)
+  storeId         String
+  store           Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  url             String
+  statusCode      Int?
+  title           String?
+  metaDescription String?
+  h1              String?
+  contentHash     String?
+  wordCount       Int?
+  createdAt       DateTime @default(now())
+
+  issues SeoIssue[]
+
+  @@unique([crawlJobId, url])
+  @@index([storeId, url])
+}
+
+/// A detected SEO issue on a page, produced by the SEO engine.
+model SeoIssue {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  rule      String
+  severity  Severity @default(MEDIUM)
+  message   String?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([pageId])
+}
+
+/// Immutable audit trail entries (written via @seogod/audit).
+model AuditLog {
+  id           String   @id @default(cuid())
+  storeId      String?
+  actorType    String
+  actorId      String?
+  action       String
+  resourceType String?
+  resourceId   String?
+  payload      Json?
+  createdAt    DateTime @default(now())
+
+  store Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
+  @@index([action, createdAt])
+}
+
+/// Transactional outbox for the event bus (@seogod/events).
+model OutboxEvent {
+  id            String        @id @default(cuid())
+  type          String
+  aggregateType String?
+  aggregateId   String?
+  payload       Json?
+  status        OutboxStatus  @default(PENDING)
+  attempts      Int           @default(0)
+  nextAttemptAt DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  processedAt   DateTime?
+
+  @@index([status, nextAttemptAt])
+}
+
+/// Human approval requests for high-impact AI actions (@seogod/safety).
+model ApprovalRequest {
+  id          String         @id @default(cuid())
+  storeId     String
+  store       Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  status      ApprovalStatus @default(PENDING)
+  kind        String
+  payload     Json
+  rationale   String?
+  requestedBy String?
+  decidedBy   String?
+  decidedAt   DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([storeId, status])
+}
