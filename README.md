@@ -62,3 +62,12 @@ docker compose up -d   # optional: local Postgres + Redis
 This project is built around a simple rule: **no spammy SEO, ever.** Every AI
 action is explainable, and high-impact changes require human approval before
 they touch a live store. See `docs/` for the full safety model.
+
+## Documentation
+
+- [Architecture](docs/architecture.md) — packages, dependency rules, quality gates
+- [Configuration](docs/configuration.md) — environment schema and validation
+- [Database](docs/database.md) — Prisma schema, repositories, migration workflow
+- [Events](docs/events.md) — transactional outbox event bus
+- [Logging](docs/logging.md) — structured pino logging and error serialization
+- [Security](docs/security.md) — encryption, sanitization, auditability
