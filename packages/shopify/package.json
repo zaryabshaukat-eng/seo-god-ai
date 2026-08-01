@@ -21,7 +21,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@seogod/core": "*"
+    "@seogod/core": "*",
+    "@seogod/shared": "*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

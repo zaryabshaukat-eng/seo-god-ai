@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import { decryptAes256Gcm, encryptAes256Gcm } from '@seogod/shared';
 import { ShopifyTokenError, ShopifyValidationError } from './errors.js';
 import type { StoreToken } from './types.js';
 
@@ -42,23 +42,13 @@ export interface EncryptedTokenStorageOptions {
   masterKey: string | Buffer;
 }
 
-const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 12;
-const ENVELOPE_VERSION = 1;
-
-interface CipherEnvelope {
-  v: 1;
-  iv: string;
-  tag: string;
-  ct: string;
-}
-
 /**
  * Wraps any `TokenStorage` and encrypts access tokens at rest with
  * AES-256-GCM before handing them to the delegate.
  *
- * The stored payload is an authenticated envelope `{ v, iv, tag, ct }`;
- * any tampering or use of the wrong key causes decryption to fail loudly.
+ * The stored payload is an authenticated envelope `{ v, iv, tag, ct }`
+ * (see `@seogod/shared`); any tampering or use of the wrong key causes
+ * decryption to fail loudly.
  */
 export class EncryptedTokenStorage implements TokenStorage {
   private readonly delegate: TokenStorage;
@@ -86,59 +76,18 @@ export class EncryptedTokenStorage implements TokenStorage {
   }
 
   private encrypt(plaintext: string): string {
-    const iv = randomBytes(IV_LENGTH);
-    const cipher = createCipheriv(ENCRYPTION_ALGORITHM, this.key, iv);
-    const ciphertext = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
-    const tag = cipher.getAuthTag();
-    const envelope: CipherEnvelope = {
-      v: ENVELOPE_VERSION,
-      iv: iv.toString('base64'),
-      tag: tag.toString('base64'),
-      ct: ciphertext.toString('base64'),
-    };
-    return JSON.stringify(envelope);
+    return encryptAes256Gcm(plaintext, this.key);
   }
 
   private decrypt(payload: string): string {
-    const envelope = parseEnvelope(payload);
     try {
-      const decipher = createDecipheriv(
-        ENCRYPTION_ALGORITHM,
-        this.key,
-        Buffer.from(envelope.iv, 'base64'),
-      );
-      decipher.setAuthTag(Buffer.from(envelope.tag, 'base64'));
-      const plaintext = Buffer.concat([
-        decipher.update(Buffer.from(envelope.ct, 'base64')),
-        decipher.final(),
-      ]);
-      return plaintext.toString('utf8');
+      return decryptAes256Gcm(payload, this.key);
     } catch {
       throw new ShopifyTokenError(
         'Failed to decrypt stored access token',
         'TOKEN_DECRYPTION_FAILED',
       );
     }
-  }
-}
-
-function parseEnvelope(payload: string): CipherEnvelope {
-  try {
-    const parsed = JSON.parse(payload) as Partial<CipherEnvelope>;
-    if (
-      parsed.v !== ENVELOPE_VERSION ||
-      typeof parsed.iv !== 'string' ||
-      typeof parsed.tag !== 'string' ||
-      typeof parsed.ct !== 'string'
-    ) {
-      throw new Error('malformed envelope');
-    }
-    return { v: parsed.v, iv: parsed.iv, tag: parsed.tag, ct: parsed.ct };
-  } catch {
-    throw new ShopifyTokenError(
-      'Stored token is not a valid encrypted envelope',
-      'TOKEN_DECRYPTION_FAILED',
-    );
   }
 }
 
