@@ -67,6 +67,7 @@ they touch a live store. See `docs/` for the full safety model.
 
 - [Architecture](docs/architecture.md) — packages, dependency rules, quality gates
 - [Configuration](docs/configuration.md) — environment schema and validation
+- [Crawler](docs/crawler.md) — crawl engine, robots/rate-limit safety, SEO checks
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization
