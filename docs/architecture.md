@@ -15,8 +15,12 @@ SEO GOD AI is a TypeScript monorepo managed with [npm workspaces](https://docs.n
 | `@seogod/audit`        | Immutable audit trail over the `AuditLog` table                       |
 | `@seogod/events`       | Transactional outbox event bus with retries and backoff               |
 | `@seogod/monitoring`   | Health checks, metrics registry, `/health` `/ready` `/metrics` server |
+| `@seogod/crawler`      | Site crawl engine: scheduling, robots/rate-limit safety, extraction   |
+| `@seogod/seo-engine`   | Deterministic, evidence-backed SEO scoring and recommendations        |
+| `@seogod/knowledge-graph` | Versioned relationship layer: nodes, edges, queries, scoring        |
+| `@seogod/decision-engine` | Deterministic planning, approval, and rollback-ready execution      |
 
-Planned Sprint 2+ packages: `agents`, `ai`, `crawler`, `reports`, `safety`, `seo-engine`, `ui`, plus the `apps/api` and `apps/dashboard` applications.
+Planned packages and applications: `agents`, `ai`, `reports`, `safety`, `ui`, plus the `apps/api` and `apps/dashboard` applications.
 
 ## Dependency rules
 
@@ -46,7 +50,7 @@ npm run build          # topological, from clean state
 npm run typecheck
 npm run lint
 npm run test
-npm run test:coverage  # 90% per metric, per package
+npm run test:coverage  # 95% per metric, per package
 npm run cycles         # 0 errors
 ```
 

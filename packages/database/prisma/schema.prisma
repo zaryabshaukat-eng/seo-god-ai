@@ -274,3 +274,108 @@ model GraphEdge {
   @@index([snapshotId, targetNodeId])
   @@index([storeId, type])
 }
+
+/// A decision to act on a set of SEO recommendations (@seogod/decision-engine).
+model Decision {
+  id                String   @id @default(cuid())
+  storeId           String
+  source            String // what triggered it, e.g. 'crawl.completed' | 'manual'
+  status            String // PENDING | PLANNED | AWAITING_APPROVAL | APPROVED | ...
+  score             Float // aggregated priority score 0..100
+  recommendationIds Json
+  recommendations   Json // source recommendations snapshot
+  context           Json // store settings, flags, historical outcomes, graph
+  summary           Json
+  planId            String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([storeId, status])
+  @@index([storeId, createdAt])
+}
+
+/// An executable, ordered plan derived from a decision.
+model ExecutionPlan {
+  id                       String   @id @default(cuid())
+  storeId                  String
+  decisionId               String
+  status                   String // DRAFT | AWAITING_APPROVAL | APPROVED | ...
+  version                  Int      @default(1)
+  estimatedDurationMinutes Int
+  totalEffortHours         Float
+  totalImpact              Float
+  risk                     String // LOW | MEDIUM | HIGH
+  approvalRequestId        String?
+  orderedTaskIds           Json
+  dependencies             Json
+  batches                  Json? // serialized ExecutionBatch list
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@unique([decisionId, version])
+  @@index([storeId, status])
+}
+
+/// A single actionable change derived from a recommendation.
+model ExecutionTask {
+  id               String   @id @default(cuid())
+  storeId          String
+  decisionId       String
+  planId           String
+  recommendationId String
+  rule             String
+  actionType       String
+  resourceType     String // product | collection | page | blog | article
+  resourceId       String // stable business key (URL or shopify id)
+  resourceRef      String // human-readable reference (URL)
+  payload          Json
+  priority         Int // 0..100
+  status           String // PENDING | READY | IN_PROGRESS | COMPLETED | ...
+  dependsOn        Json
+  isMutating       Boolean
+  risk             String // LOW | MEDIUM | HIGH
+  estimatedSeconds Int
+  rollback         Json? // RollbackPlan
+  result           Json? // ExecutionResult
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([planId])
+  @@index([storeId, status])
+}
+
+/// A plan-level approval request governed by an approval policy (@seogod/decision-engine).
+model PlanApprovalRequest {
+  id          String    @id @default(cuid())
+  storeId     String
+  planId      String
+  decisionId  String
+  policy      String // AUTO_APPROVE | REQUIRE_APPROVAL | DENY
+  status      String // PENDING | APPROVED | REJECTED
+  reason      String
+  requestedBy String
+  decidedBy   String?
+  decidedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([storeId, status])
+  @@index([planId])
+}
+
+/// A record of a completed (or attempted) rollback of an executed task.
+model RollbackRecord {
+  id          String    @id @default(cuid())
+  storeId     String
+  planId      String
+  taskId      String
+  status      String // PENDING | COMPLETED | FAILED
+  steps       Json
+  reason      String
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([storeId, status])
+  @@index([planId])
+}

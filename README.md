@@ -23,6 +23,8 @@ packages/
   ai/            AI orchestration
   crawler/       Crawl and analyze the site
   seo-engine/    SEO scoring and recommendations
+  knowledge-graph/  Canonical relationship layer and queries
+  decision-engine/  Deterministic planning, approval, and execution
   reports/       PDF and dashboard reporting
   safety/        Validation before changes
   shopify/       Shopify integration
@@ -70,6 +72,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Crawler](docs/crawler.md) — crawl engine, robots/rate-limit safety, SEO checks
 - [SEO Engine](docs/seo-engine.md) — deterministic, evidence-backed recommendations
 - [Knowledge Graph](docs/knowledge-graph.md) — canonical relationship layer and queries
+- [Decision Engine](docs/decision-engine.md) — deterministic planning, approval, and execution
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization
