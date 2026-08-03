@@ -1,0 +1,37 @@
+{
+  "name": "@seogod/ai-orchestrator",
+  "version": "0.0.0",
+  "private": true,
+  "description": "AI orchestrator: coordinates specialist agents into deterministic, validated, recoverable workflows",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@seogod/core": "*",
+    "@seogod/decision-engine": "*",
+    "@seogod/events": "*",
+    "@seogod/logging": "*",
+    "@seogod/monitoring": "*",
+    "@seogod/seo-engine": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
+}
