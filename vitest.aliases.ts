@@ -19,6 +19,7 @@ const PACKAGES = [
   'reports',
   'safety',
   'seo-engine',
+  'knowledge-graph',
   'ui',
 ];
 

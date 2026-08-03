@@ -210,3 +210,67 @@ model ApprovalRequest {
 
   @@index([storeId, status])
 }
+
+/// A versioned snapshot of a store's knowledge graph (@seogod/knowledge-graph).
+/// Every build creates a new version so the graph stays historical.
+model GraphSnapshot {
+  id                 String   @id @default(cuid())
+  storeId            String
+  version            Int
+  label              String?
+  source             String // what produced it, e.g. 'crawl.completed'
+  previousSnapshotId String? // prior version id, when known
+  summary            Json? // node/edge counts and build metadata
+  createdAt          DateTime @default(now())
+
+  nodes GraphNode[]
+  edges GraphEdge[]
+
+  @@unique([storeId, version])
+  @@index([storeId, createdAt])
+}
+
+/// A node in the knowledge graph: page, product, collection, keyword, entity, ...
+model GraphNode {
+  id         String        @id @default(cuid())
+  snapshotId String
+  snapshot   GraphSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  storeId    String
+  type       String // NodeType, e.g. 'page' | 'product' | 'keyword'
+  externalId String // stable business key (normalized URL, slug, text key)
+  name       String?
+  properties Json?
+  source     String // provenance: which crawler/engine data produced this node
+  version    Int           @default(1)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  outEdges GraphEdge[] @relation("GraphEdge_sourceNode")
+  inEdges  GraphEdge[] @relation("GraphEdge_targetNode")
+
+  @@unique([snapshotId, type, externalId])
+  @@index([storeId, type])
+}
+
+/// A directed relationship between two graph nodes with explainable metadata.
+model GraphEdge {
+  id           String      @id @default(cuid())
+  snapshotId   String
+  snapshot     GraphSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  storeId      String
+  type         String // EdgeType, e.g. 'links_to' | 'targets' | 'affects'
+  sourceNodeId String
+  sourceNode   GraphNode   @relation("GraphEdge_sourceNode", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNodeId String
+  targetNode   GraphNode   @relation("GraphEdge_targetNode", fields: [targetNodeId], references: [id], onDelete: Cascade)
+  weight       Float       @default(1)
+  confidence   Float       @default(1)
+  source       String // provenance: which builder/rule produced this edge
+  properties   Json? // evidence + explainability metadata
+  createdAt    DateTime    @default(now())
+
+  @@unique([snapshotId, type, sourceNodeId, targetNodeId])
+  @@index([snapshotId, sourceNodeId])
+  @@index([snapshotId, targetNodeId])
+  @@index([storeId, type])
+}
