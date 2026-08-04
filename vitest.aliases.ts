@@ -22,6 +22,7 @@ const PACKAGES = [
   'knowledge-graph',
   'decision-engine',
   'ai-orchestrator',
+  'execution-engine',
   'ui',
 ];
 
