@@ -19,7 +19,7 @@ apps/
   dashboard/     User interface
   api/           Backend services
 packages/
-  agents/        Specialized AI workers (CEO, Planner, Technical SEO, On-Page, ...)
+  agents/        Deterministic specialist agents (Metadata, Technical SEO, Content, Keyword, ...)
   ai/            AI orchestration
   crawler/       Crawl and analyze the site
   seo-engine/    SEO scoring and recommendations
@@ -75,6 +75,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Knowledge Graph](docs/knowledge-graph.md) — canonical relationship layer and queries
 - [Decision Engine](docs/decision-engine.md) — deterministic planning, approval, and execution
 - [AI Orchestrator](docs/ai-orchestrator.md) — deterministic, validated, recoverable agent workflows
+- [Agents](docs/agents.md) — deterministic, validated SEO analysis and proposals
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization

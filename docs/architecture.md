@@ -20,8 +20,9 @@ SEO GOD AI is a TypeScript monorepo managed with [npm workspaces](https://docs.n
 | `@seogod/knowledge-graph` | Versioned relationship layer: nodes, edges, queries, scoring        |
 | `@seogod/decision-engine` | Deterministic planning, approval, and rollback-ready execution      |
 | `@seogod/ai-orchestrator` | Coordinates agents into deterministic, validated, recoverable workflows |
+| `@seogod/agents`         | Deterministic, validated SEO analysis and proposals from 13 specialist agents |
 
-Planned packages and applications: `agents`, `ai`, `reports`, `safety`, `ui`, plus the `apps/api` and `apps/dashboard` applications.
+Planned packages and applications: `ai`, `reports`, `safety`, `ui`, plus the `apps/api` and `apps/dashboard` applications.
 
 ## Dependency rules
 
