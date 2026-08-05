@@ -29,6 +29,7 @@ packages/
   observability/    Observability engine: immutable history, metrics, alerts, learning signals
   ai-orchestrator/  Coordinates agents into deterministic, recoverable workflows
   google-integrations/ Google Search Console, GA4, PageSpeed, Rich Results, Indexing + OAuth and sync
+  scheduler/        Autonomous job scheduling: cron/one-shot jobs, retries, locking
   reports/       PDF and dashboard reporting
   safety/        Validation before changes
   shopify/       Shopify integration
@@ -82,6 +83,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Google Integrations](docs/google-integrations.md) — Google OAuth, Search Console/GA4/PageSpeed/Rich Results/Indexing clients and sync
 - [AI Orchestrator](docs/ai-orchestrator.md) — deterministic, validated, recoverable agent workflows
 - [Agents](docs/agents.md) — deterministic, validated SEO analysis and proposals
+- [Scheduler](docs/scheduler.md) — autonomous cron/one-shot jobs, priority queues, retries
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization
