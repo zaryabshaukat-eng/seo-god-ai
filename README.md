@@ -30,6 +30,7 @@ packages/
   ai-orchestrator/  Coordinates agents into deterministic, recoverable workflows
   google-integrations/ Google Search Console, GA4, PageSpeed, Rich Results, Indexing + OAuth and sync
   scheduler/        Autonomous job scheduling: cron/one-shot jobs, retries, locking
+  learning-engine/  Feedback, outcome analysis, calibration, learned scoring, RL signals
   reports/       PDF and dashboard reporting
   safety/        Validation before changes
   shopify/       Shopify integration
@@ -84,6 +85,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [AI Orchestrator](docs/ai-orchestrator.md) — deterministic, validated, recoverable agent workflows
 - [Agents](docs/agents.md) — deterministic, validated SEO analysis and proposals
 - [Scheduler](docs/scheduler.md) — autonomous cron/one-shot jobs, priority queues, retries
+- [Learning Engine](docs/learning-engine.md) — feedback, outcome analysis, calibration, learned scoring, RL signals
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization

@@ -25,6 +25,7 @@ const PACKAGES = [
   'execution-engine',
   'observability',
   'google-integrations',
+  'learning-engine',
   'scheduler',
   'ui',
 ];
