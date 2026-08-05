@@ -20,6 +20,7 @@ SEO GOD AI is a TypeScript monorepo managed with [npm workspaces](https://docs.n
 | `@seogod/knowledge-graph` | Versioned relationship layer: nodes, edges, queries, scoring        |
 | `@seogod/decision-engine` | Deterministic planning, approval, and rollback-ready execution      |
 | `@seogod/execution-engine` | The only package allowed to write to Shopify: validated, safety-gated, rollback-ready execution |
+| `@seogod/observability`    | Observability engine: immutable history, execution records, metrics, alerts, learning signals |
 | `@seogod/ai-orchestrator` | Coordinates agents into deterministic, validated, recoverable workflows |
 | `@seogod/agents`         | Deterministic, validated SEO analysis and proposals from 13 specialist agents |
 
@@ -27,7 +28,7 @@ Planned packages and applications: `ai`, `reports`, `safety`, `ui`, plus the `ap
 
 ## Dependency rules
 
-- Dependencies flow downward: `core` has no internal dependencies; `config` and `shared` depend on `core`; `logging` depends on `config` and `core`; `database`, `audit`, `events`, `monitoring` depend on the layer below them. `shopify` depends on `core`, `shared`, and `logging`.
+- Dependencies flow downward: `core` has no internal dependencies; `config` and `shared` depend on `core`; `logging` depends on `config` and `core`; `database`, `audit`, `events`, `monitoring` depend on the layer below them. `shopify` depends on `core`, `shared`, and `logging`. `observability` depends on `crawler`, `events` and `execution-engine`, and consumes `monitoring` structurally (a `MetricsRegistry` is injected via options rather than imported).
 - Circular imports are forbidden and enforced by dependency-cruiser (`npm run cycles`). A new package must be added to the root `build` script in topological order.
 - ESLint restricts access to `process.env` to `@seogod/config` only. No other package may read environment variables directly.
 - `console.log` is forbidden; use the structured logger (`@seogod/logging`).

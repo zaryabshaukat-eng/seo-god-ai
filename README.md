@@ -26,6 +26,7 @@ packages/
   knowledge-graph/  Canonical relationship layer and queries
   decision-engine/  Deterministic planning, approval, and execution
   execution-engine/ The only package allowed to write to Shopify: validated, safety-gated, rollback-ready execution
+  observability/    Observability engine: immutable history, metrics, alerts, learning signals
   ai-orchestrator/  Coordinates agents into deterministic, recoverable workflows
   reports/       PDF and dashboard reporting
   safety/        Validation before changes
@@ -76,6 +77,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Knowledge Graph](docs/knowledge-graph.md) — canonical relationship layer and queries
 - [Decision Engine](docs/decision-engine.md) — deterministic planning, approval, and execution
 - [Execution Engine](docs/execution-engine.md) — validated, safety-gated, rollback-ready Shopify writes
+- [Observability](docs/observability.md) — immutable history, metrics, alerts, learning signals
 - [AI Orchestrator](docs/ai-orchestrator.md) — deterministic, validated, recoverable agent workflows
 - [Agents](docs/agents.md) — deterministic, validated SEO analysis and proposals
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow

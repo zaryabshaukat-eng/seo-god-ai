@@ -23,6 +23,7 @@ const PACKAGES = [
   'decision-engine',
   'ai-orchestrator',
   'execution-engine',
+  'observability',
   'ui',
 ];
 
