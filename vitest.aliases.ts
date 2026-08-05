@@ -24,6 +24,7 @@ const PACKAGES = [
   'ai-orchestrator',
   'execution-engine',
   'observability',
+  'google-integrations',
   'ui',
 ];
 
