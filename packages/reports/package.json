@@ -1,12 +1,38 @@
 ﻿{
-  "version": "0.0.0",
   "name": "@seogod/reports",
-  "description": "SEO GOD AI package: @seogod/reports",
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.json"
-  },
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reporting for SEO GOD AI: executive dashboards, SEO reports, KPI tracking, historical trends, alert summaries, PDF/CSV export and scheduled reports",
   "type": "module",
-  "dependencies": {},
-  "private": true
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@seogod/core": "*",
+    "@seogod/monitoring": "*"
+  },
+  "devDependencies": {
+    "@seogod/decision-engine": "*",
+    "@seogod/google-integrations": "*",
+    "@seogod/learning-engine": "*",
+    "@seogod/observability": "*",
+    "@seogod/seo-engine": "*",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
 }

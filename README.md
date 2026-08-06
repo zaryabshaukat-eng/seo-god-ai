@@ -86,6 +86,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Agents](docs/agents.md) — deterministic, validated SEO analysis and proposals
 - [Scheduler](docs/scheduler.md) — autonomous cron/one-shot jobs, priority queues, retries
 - [Learning Engine](docs/learning-engine.md) — feedback, outcome analysis, calibration, learned scoring, RL signals
+- [Reporting](docs/reporting.md) — executive dashboards, SEO/KPI/trend reports, PDF/CSV export, scheduled reports
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization
