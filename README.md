@@ -32,6 +32,7 @@ packages/
   scheduler/        Autonomous job scheduling: cron/one-shot jobs, retries, locking
   learning-engine/  Feedback, outcome analysis, calibration, learned scoring, RL signals
   reports/       PDF and dashboard reporting
+  enterprise/   Multi-tenant orgs, RBAC, audit, API keys, webhooks, billing
   safety/        Validation before changes
   shopify/       Shopify integration
   shared/        Shared types and utilities
@@ -87,6 +88,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Scheduler](docs/scheduler.md) — autonomous cron/one-shot jobs, priority queues, retries
 - [Learning Engine](docs/learning-engine.md) — feedback, outcome analysis, calibration, learned scoring, RL signals
 - [Reporting](docs/reporting.md) — executive dashboards, SEO/KPI/trend reports, PDF/CSV export, scheduled reports
+- [Enterprise](docs/enterprise.md) — multi-tenant orgs, RBAC, audit, API keys, webhooks, billing
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization

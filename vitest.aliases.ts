@@ -27,6 +27,7 @@ const PACKAGES = [
   'google-integrations',
   'learning-engine',
   'scheduler',
+  'enterprise',
   'ui',
 ];
 
