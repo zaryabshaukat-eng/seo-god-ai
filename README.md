@@ -18,6 +18,7 @@ Monorepo (npm workspaces):
 apps/
   dashboard/     User interface
   api/           Backend services
+  web/           Web UI client (framework-free)
 packages/
   agents/        Deterministic specialist agents (Metadata, Technical SEO, Content, Keyword, ...)
   ai/            AI orchestration
@@ -91,6 +92,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Reporting](docs/reporting.md) — executive dashboards, SEO/KPI/trend reports, PDF/CSV export, scheduled reports
 - [Enterprise](docs/enterprise.md) — multi-tenant orgs, RBAC, audit, API keys, webhooks, billing
 - [AI Copilot](docs/ai-copilot.md) — conversational assistant, streaming chat, tool calling, permissions, audit
+- [Web UI](docs/web-ui.md) — framework-free web client: virtual DOM, theming, RBAC routing, real-time, feature pages
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
 - [Logging](docs/logging.md) — structured pino logging and error serialization

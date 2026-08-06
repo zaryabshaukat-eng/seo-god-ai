@@ -32,12 +32,16 @@ const PACKAGES = [
   'ui',
 ];
 
+/** Workspace applications (under `apps/`). */
+const APPS = ['web'];
+
 /**
- * Maps `@seogod/<package>` to each package's TypeScript source entry point so
- * Vitest runs against source (not stale `dist` output).
+ * Maps `@seogod/<package>` to each workspace package/application's TypeScript
+ * source entry point so that Vitest runs against source (not stale `dist`).
  */
 export function workspaceAliases(): Record<string, string> {
-  return Object.fromEntries(
-    PACKAGES.map((pkg) => [`@seogod/${pkg}`, resolve(ROOT_DIR, 'packages', pkg, 'src', 'index.ts')]),
-  );
+  return Object.fromEntries([
+    ...PACKAGES.map((pkg) => [`@seogod/${pkg}`, resolve(ROOT_DIR, 'packages', pkg, 'src', 'index.ts')]),
+    ...APPS.map((app) => [`@seogod/${app}`, resolve(ROOT_DIR, 'apps', app, 'src', 'index.ts')]),
+  ]);
 }

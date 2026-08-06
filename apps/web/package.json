@@ -1,0 +1,33 @@
+{
+  "name": "@seogod/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Web UI client for SEO GOD AI: accessible, responsive, dark/light themed frontend covering authentication, dashboard, crawl management, SEO analysis, execution management, observability dashboards, reports, AI Copilot chat, enterprise administration, settings, notifications and real-time updates",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@seogod/core": "*"
+  },
+  "devDependencies": {
+    "@seogod/enterprise": "*",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
+}
