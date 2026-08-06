@@ -1,0 +1,40 @@
+{
+  "name": "@seogod/ai-copilot",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Conversational AI assistant for SEO GOD AI: streaming chat, conversation memory, tool calling, prompt management, audit logging and role-based permissions over orchestrator, decision-engine, learning-engine, observability, reports and enterprise data",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@seogod/core": "*",
+    "@seogod/monitoring": "*"
+  },
+  "devDependencies": {
+    "@seogod/agents": "*",
+    "@seogod/ai-orchestrator": "*",
+    "@seogod/decision-engine": "*",
+    "@seogod/enterprise": "*",
+    "@seogod/learning-engine": "*",
+    "@seogod/observability": "*",
+    "@seogod/reports": "*",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
+}

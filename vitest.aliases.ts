@@ -15,6 +15,7 @@ const PACKAGES = [
   'shopify',
   'agents',
   'ai',
+  'ai-copilot',
   'crawler',
   'reports',
   'safety',
