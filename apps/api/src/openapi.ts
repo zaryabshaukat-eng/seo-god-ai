@@ -71,7 +71,7 @@ export function operationIdOf(method: string, path: string): string {
 /** Builds the OpenAPI document for the router's registered routes. */
 export function buildOpenApi(router: Router, options: { version?: string; baseUrl?: string } = {}): OpenApiDocument {
   const paths: Record<string, Record<string, unknown>> = {};
-  const tagNames = new Set<string>(['Auth', 'Dashboard', 'Crawls', 'SEO', 'Executions', 'Observability', 'Reports', 'Copilot', 'Admin', 'Settings', 'Notifications', 'Webhooks', 'Realtime']);
+  const tagNames = new Set<string>(['Auth', 'Dashboard', 'Crawls', 'SEO', 'Executions', 'Observability', 'Reports', 'Copilot', 'Admin', 'Settings', 'Notifications', 'Webhooks', 'Realtime', 'Plugins']);
 
   for (const route of router.list()) {
     const method = route.method.toLowerCase();
@@ -132,7 +132,7 @@ export function buildOpenApi(router: Router, options: { version?: string; baseUr
       title: 'SEO GOD AI API',
       version: options.version ?? '0.3.5',
       description:
-        'REST + streaming API for the SEO GOD AI platform: auth, dashboards, crawls, SEO analysis, executions, observability, reports, AI Copilot, administration, settings, notifications, webhooks and real-time events.',
+        'REST + streaming API for the SEO GOD AI platform: auth, dashboards, crawls, SEO analysis, executions, observability, reports, AI Copilot, administration, plugins, settings, notifications, webhooks and real-time events.',
     },
     servers: [{ url: options.baseUrl ?? '/api/v1' }],
     tags,
@@ -316,4 +316,15 @@ const OPERATION_META: Record<string, OpenApiOperationMeta> = {
 
   'GET /api/v1/realtime/events': { operationId: 'realtimeEvents', tags: ['Realtime'], summary: 'Server-Sent Events stream.', queryParams: [{ name: 'channel', schema: { type: 'string' } }] },
   'POST /api/v1/realtime/publish': { operationId: 'realtimePublish', tags: ['Realtime'], summary: 'Publish an event to a channel.', requestBody: { type: 'object', required: ['channel'], properties: { channel: { type: 'string' }, payload: { type: 'object', additionalProperties: true } } } },
+
+  'GET /api/v1/admin/plugins': { operationId: 'listPlugins', tags: ['Plugins'], summary: 'List installed plugins.' },
+  'POST /api/v1/admin/plugins': { operationId: 'installPlugin', tags: ['Plugins'], summary: 'Install a plugin bundle.', requestBody: { type: 'object', required: ['manifest', 'code'], properties: { manifest: { type: 'object', additionalProperties: true }, code: { type: 'string' } } } },
+  'GET /api/v1/admin/plugins/{id}': { operationId: 'getPlugin', tags: ['Plugins'], summary: 'Fetch one installed plugin.' },
+  'PUT /api/v1/admin/plugins/{id}': { operationId: 'updatePlugin', tags: ['Plugins'], summary: 'Update a plugin bundle.', requestBody: { type: 'object', required: ['manifest', 'code'], properties: { manifest: { type: 'object', additionalProperties: true }, code: { type: 'string' } } } },
+  'DELETE /api/v1/admin/plugins/{id}': { operationId: 'uninstallPlugin', tags: ['Plugins'], summary: 'Uninstall a plugin.' },
+  'POST /api/v1/admin/plugins/{id}/enable': { operationId: 'enablePlugin', tags: ['Plugins'], summary: 'Enable an installed plugin.' },
+  'POST /api/v1/admin/plugins/{id}/disable': { operationId: 'disablePlugin', tags: ['Plugins'], summary: 'Disable an enabled plugin.' },
+  'POST /api/v1/admin/plugins/dispatch/tools/{toolId}': { operationId: 'executePluginTool', tags: ['Plugins'], summary: 'Execute a plugin tool.', requestBody: { type: 'object', properties: { args: { type: 'object', additionalProperties: true } } } },
+  'POST /api/v1/admin/plugins/dispatch/analyzers/{analyzerId}': { operationId: 'runPluginAnalyzer', tags: ['Plugins'], summary: 'Run a plugin analyzer.', requestBody: { type: 'object', properties: { context: { type: 'object', additionalProperties: true } } } },
+  'POST /api/v1/admin/plugins/dispatch/actions/{actionId}': { operationId: 'runPluginAction', tags: ['Plugins'], summary: 'Execute a plugin execution action.', requestBody: { type: 'object', required: ['action'], properties: { action: { type: 'string' }, payload: { type: 'object', additionalProperties: true } } } },
 };

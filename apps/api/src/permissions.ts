@@ -26,6 +26,8 @@ export const PlatformPermissions = {
   settingsRead: 'settings.read',
   settingsWrite: 'settings.write',
   notificationsRead: 'notifications.read',
+  pluginsRead: 'plugins.read',
+  pluginsWrite: 'plugins.write',
 } as const;
 
 export type PlatformPermission = (typeof PlatformPermissions)[keyof typeof PlatformPermissions];

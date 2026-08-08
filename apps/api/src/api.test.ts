@@ -1021,6 +1021,175 @@ describe('admin', () => {
   });
 });
 
+describe('plugins', () => {
+  let h: Harness;
+  let token: string;
+  beforeEach(async () => {
+    h = await newHarness();
+    ({ token } = await register(h, { email: 'plugins@example.com' }));
+  });
+  afterEach(async () => {
+    await stopQuietly(h);
+  });
+
+  function bundle(version = '1.0.0', id = 'hello.plugin', name = 'Hello Plugin') {
+    return {
+      manifest: {
+        schemaVersion: 1,
+        id,
+        name,
+        version,
+        permissions: ['plugin.tools.execute', 'plugin.analyzers.run', 'plugin.execution.actions'],
+        contributions: {
+          tools: [{ id: 'greet', name: 'Greet' }],
+          analyzers: [{ id: 'titleCheck', name: 'Title Check' }],
+          executionActions: [{ id: 'publish', name: 'Publish' }],
+        },
+      },
+      code: `(function () { return {
+        contributions: {
+          tools: { greet: function (args) { return { greeting: 'hello ' + String(args.name) }; } },
+          analyzers: { titleCheck: function (context) { return { score: context.storeId === 's1' ? 90 : 10, issues: [], recommendations: [] }; } },
+          executionActions: { publish: function (input) { return { ok: true, output: { action: input.action } }; } },
+        },
+      }; })()`,
+    };
+  }
+
+  it('installs, lists, executes and uninstalls plugins', async () => {
+    const installed = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: bundle() });
+    expect(installed.status).toBe(201);
+    expect((installed.body as any).plugin.id).toBe('hello.plugin');
+    expect((installed.body as any).plugin.state).toBe('installed');
+
+    const listed = await api(h, '/api/v1/admin/plugins', { token });
+    expect(listed.status).toBe(200);
+    expect((listed.body as any).plugins.map((plugin: any) => plugin.id)).toContain('hello.plugin');
+
+    const fetched = await api(h, '/api/v1/admin/plugins/hello.plugin', { token });
+    expect(fetched.status).toBe(200);
+    expect((fetched.body as any).plugin.version).toBe('1.0.0');
+
+    const enabled = await api(h, '/api/v1/admin/plugins/hello.plugin/enable', { method: 'POST', token });
+    expect(enabled.status).toBe(200);
+    expect((enabled.body as any).plugin.state).toBe('enabled');
+
+    const tool = await api(h, '/api/v1/admin/plugins/dispatch/tools/greet', {
+      method: 'POST',
+      token,
+      body: { args: { name: 'world' } },
+    });
+    expect(tool.status).toBe(200);
+    expect((tool.body as any).result).toEqual({ greeting: 'hello world' });
+
+    const analyzer = await api(h, '/api/v1/admin/plugins/dispatch/analyzers/titleCheck', {
+      method: 'POST',
+      token,
+      body: { context: { storeId: 's1' } },
+    });
+    expect(analyzer.status).toBe(200);
+    expect((analyzer.body as any).analyzer.score).toBe(90);
+
+    const action = await api(h, '/api/v1/admin/plugins/dispatch/actions/publish', {
+      method: 'POST',
+      token,
+      body: { action: 'publish', payload: { channel: 'c' } },
+    });
+    expect(action.status).toBe(200);
+    expect((action.body as any).result.ok).toBe(true);
+
+    const updated = await api(h, '/api/v1/admin/plugins/hello.plugin', {
+      method: 'PUT',
+      token,
+      body: bundle('1.1.0'),
+    });
+    expect(updated.status).toBe(200);
+    expect((updated.body as any).plugin.version).toBe('1.1.0');
+
+    const disabled = await api(h, '/api/v1/admin/plugins/hello.plugin/disable', { method: 'POST', token });
+    expect(disabled.status).toBe(200);
+    expect((disabled.body as any).plugin.state).toBe('disabled');
+
+    const blocked = await api(h, '/api/v1/admin/plugins/dispatch/tools/greet', {
+      method: 'POST',
+      token,
+      body: { args: { name: 'world' } },
+    });
+    expect(blocked.status).toBe(404);
+
+    const removed = await api(h, '/api/v1/admin/plugins/hello.plugin', { method: 'DELETE', token });
+    expect(removed.status).toBe(200);
+
+    const missing = await api(h, '/api/v1/admin/plugins/hello.plugin', { token });
+    expect(missing.status).toBe(404);
+  });
+
+  it('rejects malformed bundles and duplicate installs', async () => {
+    const noCode = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: { manifest: bundle().manifest } });
+    expect(noCode.status).toBe(400);
+
+    const noBody = await api(h, '/api/v1/admin/plugins', { method: 'POST', token });
+    expect(noBody.status).toBe(400);
+
+    const badManifest = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: { manifest: 'not-an-object', code: bundle().code } });
+    expect(badManifest.status).toBe(400);
+
+    const noBodyUpdate = await api(h, '/api/v1/admin/plugins/hello.plugin', { method: 'PUT', token });
+    expect(noBodyUpdate.status).toBe(400);
+
+    const invalidManifest = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: bundle('not.a.version') });
+    expect(invalidManifest.status).toBe(400);
+    expect((invalidManifest.body as any).error.code).toBe('plugin_error');
+
+    const first = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: bundle() });
+    expect(first.status).toBe(201);
+
+    const duplicate = await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: bundle() });
+    expect(duplicate.status).toBe(409);
+  });
+
+  it('rejects dispatch to unknown contributions and requires the action field', async () => {
+    await api(h, '/api/v1/admin/plugins', { method: 'POST', token, body: bundle() });
+    await api(h, '/api/v1/admin/plugins/hello.plugin/enable', { method: 'POST', token });
+
+    const unknownTool = await api(h, '/api/v1/admin/plugins/dispatch/tools/nope', { method: 'POST', token, body: { args: {} } });
+    expect(unknownTool.status).toBe(404);
+
+    const bareTool = await api(h, '/api/v1/admin/plugins/dispatch/tools/greet', { method: 'POST', token });
+    expect(bareTool.status).toBe(200);
+    expect((bareTool.body as any).result).toEqual({ greeting: 'hello undefined' });
+
+    const bareAnalyzer = await api(h, '/api/v1/admin/plugins/dispatch/analyzers/titleCheck', { method: 'POST', token });
+    expect(bareAnalyzer.status).toBe(200);
+
+    const missingAction = await api(h, '/api/v1/admin/plugins/dispatch/actions/publish', { method: 'POST', token, body: { payload: {} } });
+    expect(missingAction.status).toBe(400);
+  });
+
+  it('denies plugin admin to callers without plugins permissions', async () => {
+    const h = await newHarness();
+    try {
+      const { session, token } = await register(h, { email: 'denyplugins@example.com' });
+
+      const viewer = await api(h, `/api/v1/admin/members/${session.user.id}/role`, {
+        method: 'PATCH',
+        token,
+        body: { role: 'viewer' },
+      });
+      expect(viewer.status).toBe(200);
+
+      const denied = await api(h, '/api/v1/admin/plugins', { token });
+      expect(denied.status).toBe(403);
+      expect((denied.body as any).error.code).toBe('forbidden');
+
+      const noToken = await api(h, '/api/v1/admin/plugins', {});
+      expect(noToken.status).toBe(401);
+    } finally {
+      await stopQuietly(h);
+    }
+  });
+});
+
 describe('settings and notifications', () => {
   let h: Harness;
   let token: string;

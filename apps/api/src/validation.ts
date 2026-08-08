@@ -95,6 +95,15 @@ export function optionalArray(body: unknown, field: string): unknown[] {
   return arrayField(body, field) ?? [];
 }
 
+/** Requires a plain-object field; throws otherwise. */
+export function requireRecord(body: unknown, field: string): Record<string, unknown> {
+  const value = isRecord(body) ? body[field] : undefined;
+  if (value === undefined || !isRecord(value)) {
+    throw new ApiValidationError(`${field} must be an object.`, { [field]: 'Must be an object.' });
+  }
+  return value;
+}
+
 /** Requires the field to be one of `allowed`; returns the matched value. */
 export function requireEnum<T extends string>(body: unknown, field: string, allowed: readonly T[], label = field): T {
   const value = requireString(body, field, label);

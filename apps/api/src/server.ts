@@ -38,6 +38,7 @@ import { registerAdminRoutes } from './controllers/admin.js';
 import { registerSettingsRoutes } from './controllers/settings.js';
 import { registerNotificationRoutes } from './controllers/notifications.js';
 import { registerWebhookRoutes } from './controllers/webhooks.js';
+import { registerPluginRoutes } from './controllers/plugins.js';
 import { RealtimeHub, registerRealtimeRoutes, wireRealtimeToEventBus } from './realtime.js';
 import { registerOpenApiRoutes } from './openapi.js';
 import { registerSdkRoutes } from './sdk.js';
@@ -237,6 +238,7 @@ export function registerPlatformRoutes(platform: Platform, router: Router, realt
   registerSettingsRoutes(platform, router);
   registerNotificationRoutes(platform, router);
   registerWebhookRoutes(platform, router);
+  registerPluginRoutes(platform, router);
   registerOpenApiRoutes(platform, router);
   registerSdkRoutes(platform, router);
   registerRealtimeRoutes(platform, router, hub);

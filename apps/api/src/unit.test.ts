@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { PluginError, PluginErrorCode } from '@seogod/plugin-sdk';
 import { EnterpriseService, type WebhookDeliverer } from '@seogod/enterprise';
 import { MetricsRegistry } from '@seogod/monitoring';
 import { EnterpriseMetrics } from '@seogod/enterprise';
@@ -20,6 +21,7 @@ import {
   UnauthorizedError,
   errorBody,
   mapKnownError,
+  mapPluginError,
   toApiError,
 } from './errors.js';
 import {
@@ -149,6 +151,31 @@ describe('error model', () => {
     (contextual as any).context = { tenant: 't1' };
     contextual.name = 'ValidationError';
     expect((mapKnownError(contextual) as ApiError)?.context).toEqual({ tenant: 't1' });
+  });
+
+  it('maps plugin-SDK errors to canonical HTTP responses', () => {
+    const pluginError = (code: (typeof PluginErrorCode)[keyof typeof PluginErrorCode], message: string) => new PluginError(code, message, { context: { pluginId: 'x' } });
+
+    expect(mapPluginError(pluginError(PluginErrorCode.notFound, 'gone'))).toBeInstanceOf(NotFoundError);
+    expect(mapPluginError(pluginError(PluginErrorCode.notFound, 'gone')).status).toBe(404);
+    expect(mapPluginError(pluginError(PluginErrorCode.notFound, 'gone')).code).toBe('plugin_not_found');
+
+    expect(mapPluginError(pluginError(PluginErrorCode.conflict, 'dupe')).status).toBe(409);
+    expect(mapPluginError(pluginError(PluginErrorCode.stateConflict, 'wrong state')).status).toBe(409);
+    expect(mapPluginError(pluginError(PluginErrorCode.stateConflict, 'wrong state')).code).toBe('plugin_conflict');
+
+    expect(mapPluginError(pluginError(PluginErrorCode.permissionNotGranted, 'nope')).status).toBe(403);
+    expect(mapPluginError(pluginError(PluginErrorCode.permissionNotGranted, 'nope')).code).toBe('plugin_permission_denied');
+    expect(mapPluginError(pluginError(PluginErrorCode.permissionNotDeclared, 'undeclared')).status).toBe(403);
+
+    expect(mapPluginError(pluginError(PluginErrorCode.sandboxTimeout, 'slow')).status).toBe(400);
+    expect(mapPluginError(pluginError(PluginErrorCode.sandboxTimeout, 'slow')).code).toBe('plugin_execution_error');
+    expect(mapPluginError(pluginError(PluginErrorCode.sandboxEval, 'boom')).status).toBe(400);
+
+    expect(mapPluginError(pluginError(PluginErrorCode.invalidVersion, 'bad')).status).toBe(400);
+    expect(mapPluginError(pluginError(PluginErrorCode.invalidVersion, 'bad')).code).toBe('plugin_error');
+
+    expect(mapPluginError(pluginError(PluginErrorCode.notFound, 'gone')).context).toEqual({ pluginId: 'x' });
   });
 });
 

@@ -4,6 +4,8 @@
  * optional `context` object and a `retryable` flag (used by 429s and 5xx).
  */
 
+import { PluginError, PluginErrorCode } from '@seogod/plugin-sdk';
+
 export interface ApiErrorOptions {
   code?: string;
   context?: Record<string, unknown>;
@@ -148,6 +150,9 @@ function statusCodeToCode(status: number): string {
  * `<Pkg><Kind>Error` convention, so the mapping is name-driven and decoupled.
  */
 export function mapKnownError(error: Error): ApiError | null {
+  if (error instanceof PluginError) {
+    return mapPluginError(error);
+  }
   const name = error.name;
   if (name.endsWith('AuthorizationError') || name.includes('Permission')) {
     return new ForbiddenError(error.message, { cause: error, context: errorContext(error) });
@@ -177,4 +182,24 @@ interface ContextualError {
 function errorContext(error: Error): Record<string, unknown> | undefined {
   const contextual = error as Error & ContextualError;
   return typeof contextual.context === 'object' && contextual.context !== null ? contextual.context : undefined;
+}
+
+/** Maps plugin-SDK failures onto HTTP semantics keyed by stable code. */
+export function mapPluginError(error: PluginError): ApiError {
+  const context = typeof error.context === 'object' && error.context !== null ? { ...error.context } : undefined;
+  switch (error.code) {
+    case PluginErrorCode.notFound:
+      return new NotFoundError(error.message, { code: 'plugin_not_found', cause: error, context });
+    case PluginErrorCode.conflict:
+    case PluginErrorCode.stateConflict:
+      return new ConflictError(error.message, { code: 'plugin_conflict', cause: error, context });
+    case PluginErrorCode.permissionNotGranted:
+    case PluginErrorCode.permissionNotDeclared:
+      return new ForbiddenError(error.message, { code: 'plugin_permission_denied', cause: error, context });
+    case PluginErrorCode.sandboxTimeout:
+    case PluginErrorCode.sandboxEval:
+      return new BadRequestError(error.message, { code: 'plugin_execution_error', cause: error, context });
+    default:
+      return new BadRequestError(error.message, { code: 'plugin_error', cause: error, context });
+  }
 }

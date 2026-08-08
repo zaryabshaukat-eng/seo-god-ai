@@ -1,0 +1,29 @@
+{
+  "name": "@seogod/plugin-sdk",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plugin and extension SDK for SEO GOD AI: manifests, lifecycle hooks, custom analyzers, AI tools, integrations, report generators, event subscribers, execution actions, UI extensions, permissions, versioning and a secure VM sandbox",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
+}

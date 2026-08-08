@@ -47,6 +47,7 @@ import {
   type GenerateReportRequest,
   type Report,
 } from '@seogod/reports';
+import { PluginRegistry, type PluginLogger } from '@seogod/plugin-sdk';
 import { AuthService } from './auth.js';
 import { ConflictError, NotFoundError } from './errors.js';
 import { NotificationsService } from './notifications.js';
@@ -347,6 +348,8 @@ export class Platform {
   readonly crawler: CrawlOrchestrator;
   readonly notifications: NotificationsService;
   readonly settings: SettingsStore;
+  /** Plugin registry hosting installed `@seogod/plugin-sdk` extensions. */
+  plugins: PluginRegistry;
   readonly reportStore = new Map<string, Report>();
   readonly acknowledgedAlerts = new Set<string>();
   readonly recommendationOverrides = new Map<string, Record<string, unknown>>();
@@ -410,6 +413,7 @@ export class Platform {
       id: this.id,
     });
     this.settings = new SettingsStore();
+    this.plugins = this.createPluginRegistry();
 
     this.copilot = new CopilotService({
       model: options.model ?? createStubChatModel(),
@@ -447,6 +451,19 @@ export class Platform {
     });
     this.health.register('platform.event-bus', async () => {
       await this.eventBus.processNext(1);
+    });
+  }
+
+  private createPluginRegistry(): PluginRegistry {
+    const logger: PluginLogger = {
+      info: (message) => this.logger.info({}, message),
+      warn: (message) => this.logger.warn({}, message),
+      error: (message) => this.logger.error({}, message),
+    };
+    return new PluginRegistry({
+      logger,
+      sdkVersion: '0.3.6',
+      apiVersion: '0.3.6',
     });
   }
 
@@ -522,6 +539,8 @@ export class Platform {
     this.metrics.reset();
     this.notifications.reset();
     this.settings.reset();
+    this.plugins.dispose();
+    this.plugins = this.createPluginRegistry();
     this.reportStore.clear();
     this.acknowledgedAlerts.clear();
     this.recommendationOverrides.clear();

@@ -29,6 +29,7 @@ const PACKAGES = [
   'learning-engine',
   'scheduler',
   'enterprise',
+  'plugin-sdk',
   'ui',
 ];
 

@@ -34,6 +34,7 @@
     "@seogod/logging": "*",
     "@seogod/monitoring": "*",
     "@seogod/observability": "*",
+    "@seogod/plugin-sdk": "*",
     "@seogod/reports": "*",
     "@seogod/scheduler": "*",
     "@seogod/seo-engine": "*",

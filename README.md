@@ -35,6 +35,7 @@ packages/
   reports/       PDF and dashboard reporting
   enterprise/   Multi-tenant orgs, RBAC, audit, API keys, webhooks, billing
   ai-copilot/   Conversational AI assistant: streaming chat, memory, tool calling, RBAC, audit
+  plugin-sdk/  Sandboxed plugin system: manifests, hooks, custom analyzers, AI tools, permissions
   safety/        Validation before changes
   shopify/       Shopify integration
   shared/        Shared types and utilities
@@ -92,6 +93,7 @@ they touch a live store. See `docs/` for the full safety model.
 - [Reporting](docs/reporting.md) — executive dashboards, SEO/KPI/trend reports, PDF/CSV export, scheduled reports
 - [Enterprise](docs/enterprise.md) — multi-tenant orgs, RBAC, audit, API keys, webhooks, billing
 - [AI Copilot](docs/ai-copilot.md) — conversational assistant, streaming chat, tool calling, permissions, audit
+- [Plugins](docs/plugins.md) — sandboxed plugin SDK: manifests, hooks, custom analyzers, AI tools, permissions
 - [Web UI](docs/web-ui.md) — framework-free web client: virtual DOM, theming, RBAC routing, real-time, feature pages
 - [Database](docs/database.md) — Prisma schema, repositories, migration workflow
 - [Events](docs/events.md) — transactional outbox event bus
