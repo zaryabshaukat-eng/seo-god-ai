@@ -49,15 +49,17 @@ export default tseslint.config(
     rules: { 'no-restricted-syntax': 'off' },
   },
   {
-    // Tests, scripts and tooling may use console and process freely.
+    // Tests, scripts and tooling may use console and process freely, and
+    // assert on loosely-typed response bodies without explicit `any`.
     files: [
       '**/*.test.ts',
+      '**/test/**',
       '**/scripts/**',
       '**/prisma/**',
       '**/vitest.config.ts',
       'eslint.config.js',
     ],
-    rules: { 'no-console': 'off', 'no-restricted-syntax': 'off' },
+    rules: { 'no-console': 'off', 'no-restricted-syntax': 'off', '@typescript-eslint/no-explicit-any': 'off' },
   },
   {
     files: ['**/*.cjs'],

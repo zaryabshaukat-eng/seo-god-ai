@@ -29,7 +29,6 @@ function fakeDb(): FakeDb {
     planApprovalRequest: new Map<string, AnyRow>(),
     rollbackRecord: new Map<string, AnyRow>(),
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tx = (maps: FakeDb['store']): any => ({
     $transaction: async (fn: (t: unknown) => Promise<unknown>) => fn(tx(maps)),
     decision: {

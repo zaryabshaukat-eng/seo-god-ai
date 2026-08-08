@@ -1,12 +1,48 @@
 ﻿{
-  "version": "0.0.0",
   "name": "@seogod/api",
-  "description": "SEO GOD AI package: @seogod/api",
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.json"
-  },
+  "version": "0.0.0",
+  "private": true,
+  "description": "SEO GOD AI API server: production-ready REST + streaming HTTP API exposing every platform capability through auth, RBAC, multi-tenancy, rate limiting, validation, OpenAPI discovery, SDK generation, AI Copilot streaming, real-time events and signed webhooks",
   "type": "module",
-  "dependencies": {},
-  "private": true
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@seogod/ai-copilot": "*",
+    "@seogod/ai-orchestrator": "*",
+    "@seogod/config": "*",
+    "@seogod/core": "*",
+    "@seogod/crawler": "*",
+    "@seogod/enterprise": "*",
+    "@seogod/events": "*",
+    "@seogod/execution-engine": "*",
+    "@seogod/learning-engine": "*",
+    "@seogod/logging": "*",
+    "@seogod/monitoring": "*",
+    "@seogod/observability": "*",
+    "@seogod/reports": "*",
+    "@seogod/scheduler": "*",
+    "@seogod/seo-engine": "*",
+    "@seogod/shared": "*"
+  },
+  "devDependencies": {
+    "@prisma/client": "*",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
 }
